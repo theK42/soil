@@ -26,7 +26,12 @@
     #include <OpenGL/gl3.h>
     #include <Carbon/Carbon.h>
 	#define APIENTRY
-#define CORE
+    #define CORE
+#elif defined(__EMSCRIPTEN__)
+    #include <GLES2/gl2.h>
+    #include <GLES2/gl2ext.h>
+    #include <EGL/egl.h>
+    #define APIENTRY
 #else
 	#include <GL/gl.h>
 	#include <GL/glx.h>
@@ -1345,7 +1350,7 @@ unsigned int
 		} else
 		{
 			/*	unsigned int clamp_mode = SOIL_CLAMP_TO_EDGE;	*/
-#ifdef CORE
+#if defined(CORE) || defined(__EMSCRIPTEN__)
 			unsigned int clamp_mode = GL_CLAMP_TO_EDGE;
 #else
 			unsigned int clamp_mode = GL_CLAMP;
@@ -1816,7 +1821,11 @@ unsigned int SOIL_direct_load_DDS_from_memory(
 		} else
 		{
 			/*	unsigned int clamp_mode = SOIL_CLAMP_TO_EDGE;	*/
-			unsigned int clamp_mode = GL_CLAMP;
+#if defined(CORE) || defined(__EMSCRIPTEN__)
+            unsigned int clamp_mode = GL_CLAMP_TO_EDGE;
+#else
+            unsigned int clamp_mode = GL_CLAMP;
+#endif
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_S, clamp_mode );
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_T, clamp_mode );
 			glTexParameteri( opengl_texture_type, SOIL_TEXTURE_WRAP_R, clamp_mode );
@@ -2099,7 +2108,13 @@ int query_DXT_capability( void )
 				CFRelease( bundleURL );
 				CFRelease( extensionName );
 				CFRelease( bundle );
-			#else
+            #elif defined(__EMSCRIPTEN__)
+                ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
+                        eglGetProcAddress
+                        (
+                            (const GLubyte *)"glCompressedTexImage2DARB"
+                        );
+            #else
 				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
 						glXGetProcAddressARB
 						(
