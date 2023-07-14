@@ -21,12 +21,20 @@
 	#include <wingdi.h>
 	#include <GL/gl.h>
 #elif defined(__APPLE__) || defined(__APPLE_CC__)
-	/*	I can't test this Apple stuff!	*/
-    #include <OpenGL/gl.h>
-    #include <OpenGL/gl3.h>
-    #include <Carbon/Carbon.h>
-	#define APIENTRY
-    #define CORE
+    /*    I can't test this Apple stuff!    */
+    #include <TargetConditionals.h>
+    #if TARGET_OS_IPHONE
+        #include <OpenGLES/ES3/gl.h>
+        #include <CoreFoundation/CoreFoundation.h>
+        #define APIENTRY
+        #define CORE
+    #else
+        #include <OpenGL/gl.h>
+        #include <OpenGL/gl3.h>
+        #include <Carbon/Carbon.h>
+        #define APIENTRY
+        #define CORE
+    #endif
 #elif defined(__EMSCRIPTEN__)
     #include <GLES2/gl2.h>
     #include <GLES2/gl2ext.h>
