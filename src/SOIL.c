@@ -35,6 +35,11 @@
         #define APIENTRY
         #define CORE
     #endif
+#elif defined(__ANDROID__)
+	#include <GLES3/gl3.h>
+    #include <EGL/egl.h>
+    #define APIENTRY
+    #define CORE
 #elif defined(__EMSCRIPTEN__)
     #include <GLES2/gl2.h>
     #include <GLES2/gl2ext.h>
@@ -2116,7 +2121,7 @@ int query_DXT_capability( void )
 				CFRelease( bundleURL );
 				CFRelease( extensionName );
 				CFRelease( bundle );
-            #elif defined(__EMSCRIPTEN__)
+            #elif defined(__EMSCRIPTEN__) || defined(ANDROID)
                 ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
                         eglGetProcAddress
                         (
